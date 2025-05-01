@@ -68,5 +68,17 @@ namespace AuctionService.Controllers
             if (result) return Ok();
             return BadRequest("Failed to update auction");
         }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAuction(Guid id)
+        {
+            var auction = await _context.Auctions.FindAsync(id);
+            if (auction == null) return NotFound();
+            // check seller = username
+
+            _context.Auctions.Remove(auction);
+            var result = await _context.SaveChangesAsync() > 0;
+            if (result) return Ok();
+            return BadRequest("Failed to delete auction");
+        }
     }
 }
