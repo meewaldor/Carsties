@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using MongoDB.Entities;
 using Polly;
 using Polly.Extensions.Http;
+using SearchService.Consumers;
 using SearchService.Data;
 using SearchService.Entities;
 using SearchService.Services;
@@ -16,9 +17,18 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient<AuctionSvcHttpClient>().AddPolicyHandler(GetPolicy());
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 // Configuring MassTransit
 builder.Services.AddMassTransit(x =>
 {
+    // Add auction created consumer
+    x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
+
+    // set endpoint for the exchange
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.ConfigureEndpoints(context);
