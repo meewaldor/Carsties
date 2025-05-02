@@ -16,6 +16,15 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Configuring MassTransit
 builder.Services.AddMassTransit(x =>
 {
+    // Enable the Entity Framework Outbox pattern using the AuctionDbContext.
+    // This ensures messages are only published if the surrounding database transaction succeeds.
+    x.AddEntityFrameworkOutbox<AuctionDbContext>(o =>
+    {
+        o.QueryDelay = TimeSpan.FromSeconds(10);
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.ConfigureEndpoints(context);
