@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Entities;
 using SearchService.Entities;
+using SearchService.RequestHelpers;
 
 namespace SearchService.Controllers
 {
@@ -11,19 +12,42 @@ namespace SearchService.Controllers
     {
         //searching items with optional search term and pagination.
         [HttpGet]
-        public async Task<ActionResult<List<Item>>> SearchItems(string? searchTerm, int pageNumber = 1, int pageSize = 4)
+        public async Task<ActionResult<List<Item>>> SearchItems([FromQuery] SearchParams searchParams)
         {
             // Create a paged search query for the Item collection
-            var query = DB.PagedSearch<Item>();
-            query.Sort(x => x.Ascending(a => a.Make));
+            var query = DB.PagedSearch<Item, Item>();
             // If a search term is provided, apply full-text search and sort results by relevance score
-            if (!string.IsNullOrEmpty(searchTerm))
+            if (!string.IsNullOrEmpty(searchParams.SearchTerm))
             {
-                query.Match(Search.Full, searchTerm).SortByTextScore();
+                query.Match(Search.Full, searchParams.SearchTerm).SortByTextScore();
             }
             // Apply pagination
-            query.PageNumber(pageNumber);
-            query.PageSize(pageSize);
+            query.PageNumber(searchParams.PageNumber);
+            query.PageSize(searchParams.PageSize);
+
+            // Dynamically apply sorting to the query based on the user's selected order option.
+            query = searchParams.OrderBy switch
+            {
+                "make" => query.Sort(x => x.Ascending(a => a.Make)),
+                "new" => query.Sort(x => x.Descending(a => a.CreatedAt)),
+                _ => query.Sort(x => x.Ascending(a => a.AuctionEnd))
+            };
+
+            query = searchParams.FilterBy switch
+            {
+                "finish" => query.Match(x => x.AuctionEnd < DateTime.UtcNow),
+                "endingSoon" => query.Match(x => x.AuctionEnd < DateTime.UtcNow.AddHours(6) && x.AuctionEnd > DateTime.UtcNow),
+                _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow)
+            };
+
+            if(!string.IsNullOrEmpty(searchParams.Seller))
+            {
+                query.Match(x => x.Seller == searchParams.Seller);
+            }
+            if (!string.IsNullOrEmpty(searchParams.Winner))
+            {
+                query.Match(x => x.Seller == searchParams.Winner);
+            }
 
             var result = await query.ExecuteAsync();
             return Ok(new
