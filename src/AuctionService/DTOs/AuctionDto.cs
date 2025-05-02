@@ -10,8 +10,8 @@ namespace AuctionService.DTOs
         public string Winner { get; set; } 
         public int SoldAmount { get; set; }
         public int CurrentHighBid { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } 
         public DateTime AuctionEnd { get; set; }
         public string Status { get; set; }
         public string Make { get; set; } 
