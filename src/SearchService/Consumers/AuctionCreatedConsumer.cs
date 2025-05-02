@@ -18,6 +18,7 @@ namespace SearchService.Consumers
             Console.WriteLine("--> Consuming AuctionCreated event: " + context.Message.Id);
             // Logic to handle the auction created event
             var item = _mapper.Map<Item>(context.Message);
+            if (item.Model == "Foo") throw new ArgumentException("Cannot sell cars with name of Foo");
             await item.SaveAsync();
         }
     }
