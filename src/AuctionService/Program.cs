@@ -18,7 +18,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Configuring MassTransit
 builder.Services.AddMassTransit(x =>
 {
-    // Add auction created consumer
+    // Add auction created fault consumer
     x.AddConsumersFromNamespaceContaining<AuctionCreatedFaultConsumer>();
 
     // set endpoint for the exchange
