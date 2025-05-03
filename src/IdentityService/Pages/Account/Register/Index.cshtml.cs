@@ -46,6 +46,7 @@ namespace IdentityService.Pages.Account.Register
 
                 if(result.Succeeded)
                 {
+                    // Save custom claim to DB
                     await _userManager.AddClaimsAsync(user, new Claim[]
                     {
                         new Claim(JwtClaimTypes.Name, Input.Fullname)
