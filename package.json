@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "query-string": "^9.1.2",
+    "zustand": "^5.0.4"
+  }
+}
