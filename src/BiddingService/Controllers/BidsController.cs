@@ -57,7 +57,7 @@ namespace BiddingService.Controllers
 
             return Ok(bid);
         }
-    }
+    
 
     [HttpGet("{auctionId}")]
         public async Task<ActionResult<List<Bid>>> GetBids(string auctionId)
