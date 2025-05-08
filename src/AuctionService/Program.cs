@@ -22,7 +22,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumersFromNamespaceContaining<AuctionCreatedFaultConsumer>();
 
     // set endpoint for the exchange
-    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
 
     // Enable the Entity Framework Outbox pattern using the AuctionDbContext.
     // This ensures messages are only published if the surrounding database transaction succeeds.
