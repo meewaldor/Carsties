@@ -14,11 +14,11 @@ namespace BiddingService.Controllers
         public async Task<ActionResult<Bid>> PlaceBid(string auctionId, int amount)
         {
             var auction = await DB.Find<Auction>().OneAsync(auctionId);
-            if(auction == null)
+            if (auction == null)
             {
                 return NotFound("Auction not found");
             }
-            if(auction.Seller == User.Identity.Name)
+            if (auction.Seller == User.Identity.Name)
             {
                 return BadRequest("You cannot bid on your own auction");
             }
@@ -30,7 +30,7 @@ namespace BiddingService.Controllers
                 Amount = amount,
             };
 
-            if(auction.AuctionEnd < DateTime.UtcNow)
+            if (auction.AuctionEnd < DateTime.UtcNow)
             {
                 bid.BisStatus = BidStatus.Finished;
             } else
@@ -51,11 +51,26 @@ namespace BiddingService.Controllers
                     bid.BisStatus = BidStatus.TooLow;
                 }
             }
-            
+
 
             await DB.SaveAsync(bid);
 
             return Ok(bid);
+        }
+    }
+
+    [HttpGet("{auctionId}")]
+        public async Task<ActionResult<List<Bid>>> GetBids(string auctionId)
+        {
+            var bids = await DB.Find<Bid>()
+                .Match(b => b.AuctionId == auctionId)
+                .Sort(b => b.Descending(x => x.BidTime))
+                .ExecuteAsync();
+            if (bids == null || bids.Count == 0)
+            {
+                return NotFound("No bids found for this auction");
+            }
+            return Ok(bids);
         }
     }
 }
