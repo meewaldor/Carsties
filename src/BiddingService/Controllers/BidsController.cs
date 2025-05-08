@@ -32,7 +32,7 @@ namespace BiddingService.Controllers
 
             if (auction.AuctionEnd < DateTime.UtcNow)
             {
-                bid.BisStatus = BidStatus.Finished;
+                bid.BidStatus = BidStatus.Finished;
             } else
             {
                 var highBid = await DB.Find<Bid>()
@@ -42,13 +42,13 @@ namespace BiddingService.Controllers
 
                 if (highBid != null && amount > highBid.Amount || highBid == null)
                 {
-                    bid.BisStatus = amount > auction.ReservePrice ?
+                    bid.BidStatus = amount > auction.ReservePrice ?
                         BidStatus.Accepted : BidStatus.AcceptedBelowReserve;
                 }
 
                 if (highBid != null && bid.Amount <= highBid.Amount)
                 {
-                    bid.BisStatus = BidStatus.TooLow;
+                    bid.BidStatus = BidStatus.TooLow;
                 }
             }
 
