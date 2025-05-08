@@ -19,3 +19,6 @@ export async function getDetailedViewData(id: string) : Promise<Auction> {
 export async function updateAuction(data: FieldValues, id: string) {
   return await fetchWrapper.put(`auctions/${id}`, data);
 }
+export async function deleteAuction(id: string) {
+  return await fetchWrapper.del(`auctions/${id}`);
+}
