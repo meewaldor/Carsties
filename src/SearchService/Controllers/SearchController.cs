@@ -47,7 +47,7 @@ namespace SearchService.Controllers
             }
             if (!string.IsNullOrEmpty(searchParams.Winner))
             {
-                query.Match(x => x.Seller == searchParams.Winner);
+                query.Match(x => x.Winner == searchParams.Winner);
             }
 
             var result = await query.ExecuteAsync();
