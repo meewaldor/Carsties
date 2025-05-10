@@ -21,6 +21,13 @@
             "Address": "http://search-svc/"
           }
         }
+      },
+      "bids": {
+        "Destinations": {
+          "searchApi": {
+            "Address": "http://bid-svc/"
+          }
+        }
       }
     }
   }
