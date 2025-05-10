@@ -1,12 +1,12 @@
 import { getDetailedViewData } from '@/actions/auctionActions';
-import Heading from '@/app/components/Heading';
+import Heading from '@/components/Heading';
 import React from 'react';
-import CountdownTimer from '../../CountdownTimer';
-import CardImage from '../../CardImage';
-import DetailedSpecs from './DetailedSpecs';
+import DetailedSpecs from '../../../../features/auctions/components/DetailedSpecs';
 import { getCurrentUser } from '@/actions/authActions';
-import EditButton from './EditButton';
-import DeleteButton from './DeleteButton';
+import EditButton from '../../../../features/auctions/components/EditButton';
+import DeleteButton from '../../../../features/auctions/components/DeleteButton';
+import CountdownTimer from '@/features/auctions/components/CountdownTimer';
+import CardImage from '@/features/auctions/components/CardImage';
 
 export default async function Details({ params }: { params: { id: string } }) {
   const data = await getDetailedViewData(params.id);

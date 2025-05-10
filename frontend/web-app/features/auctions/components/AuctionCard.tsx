@@ -1,9 +1,8 @@
-import Image from 'next/image';
 import React from 'react';
-import CountdownTimer from './CountdownTimer';
 import CardImage from './CardImage';
 import { Auction } from '@/types';
 import Link from 'next/link';
+import CountdownTimer from './CountdownTimer';
 
 type Props = {
   auction: Auction;

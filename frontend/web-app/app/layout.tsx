@@ -1,8 +1,10 @@
+// 'use client';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Navbar from './nav/Navbar';
-import ToasterProvider from './providers/ToasterProvider';
+import Navbar from '../components/nav/Navbar';
+import ToasterProvider from '../providers/ToasterProvider';
+import { StoreProvider } from '../providers/StoreProvider';
 
 export const metadata: Metadata = {
   title: 'Carsties',
@@ -17,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <ToasterProvider />
-        <Navbar />
-        <main className='container mx-auto px-5 pt-10'>{children}</main>
+        <StoreProvider>
+          <ToasterProvider />
+          <Navbar />
+          <main className='container mx-auto px-5 pt-10'>{children}</main>
+        </StoreProvider>
       </body>
     </html>
   );

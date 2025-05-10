@@ -1,4 +1,4 @@
-import EmptyFilter from '@/app/components/EmptyFilter';
+import EmptyFilter from '@/components/EmptyFilter';
 import React from 'react';
 
 export default function SignIn({

@@ -1,8 +1,3 @@
-export type PagedResult<T> = {
-  results: T[];
-  pageCount: number;
-  totalCount: number;
-};
 export type Auction = {
   reservePrice: number;
   seller: string;
@@ -21,3 +16,14 @@ export type Auction = {
   imageUrl: string;
   id: string;
 };
+
+export interface CreateAuction {
+  make: string
+  model: string
+  color: string
+  year: number
+  mileage: number
+  imageUrl: string
+  reservePrice: number
+  auctionEnd: string
+}

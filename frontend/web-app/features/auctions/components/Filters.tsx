@@ -1,9 +1,11 @@
 import { useParamsStore } from '@/hooks/useParamsStore';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { Button, ButtonGroup } from 'flowbite-react';
 import React from 'react';
 import { AiOutlineClockCircle, AiOutlineSortAscending } from 'react-icons/ai';
 import { BsFillStopCircleFill, BsStopwatchFill } from 'react-icons/bs';
 import { GiFinishLine, GiFlame } from 'react-icons/gi';
+import { setFilterBy, setOrderBy, setPageSize } from '../slices/auctionSlice';
 
 const pageSizeButtons = [4, 8, 12];
 const orderButtons = [
@@ -43,10 +45,11 @@ const filterButtons = [
 ];
 
 export default function Filters() {
-  const pageSize = useParamsStore((state) => state.pageSize);
-  const orderBy = useParamsStore((state) => state.orderBy);
-  const filterBy = useParamsStore((state) => state.filterBy);
-  const setParams = useParamsStore((state) => state.setParams);
+  const { pageSize, filterBy, orderBy } = useAppSelector(
+    (state) => state.auction
+  );
+  const dispatch = useAppDispatch();
+
   return (
     <div className='flex justify-between items-center mb-4'>
       <div>
@@ -55,7 +58,7 @@ export default function Filters() {
           {filterButtons.map(({ label, icon: Icon, value }) => (
             <Button
               key={value}
-              onClick={() => setParams({ filterBy: value })}
+              onClick={() => dispatch(setFilterBy(value))}
               color={`${filterBy === value ? 'red' : 'gray'}`}
             >
               <Icon className='mr-3 h-4 w-4' />
@@ -70,7 +73,7 @@ export default function Filters() {
           {orderButtons.map(({ label, icon: Icon, value }) => (
             <Button
               key={value}
-              onClick={() => setParams({ orderBy: value })}
+              onClick={() => dispatch(setOrderBy(value))}
               color={`${orderBy === value ? 'red' : 'gray'}`}
             >
               <Icon className='mr-3 h-4 w-4' />
@@ -85,7 +88,7 @@ export default function Filters() {
           {pageSizeButtons.map((value, i) => (
             <Button
               key={i}
-              onClick={() => setParams({ pageSize: value })}
+              onClick={() => dispatch(setPageSize(value))}
               color={`${pageSize === value ? 'red' : 'gray'}`}
               className='focus:ring-0'
             >

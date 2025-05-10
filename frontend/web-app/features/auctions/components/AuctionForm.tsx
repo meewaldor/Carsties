@@ -2,19 +2,35 @@
 import { Button, TextInput } from 'flowbite-react';
 import React, { useEffect } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
-import Input from '../components/Input';
-import DateInput from '../components/DateInput';
-import { createAuction, updateAuction } from '@/actions/auctionActions';
 import { usePathname, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Auction } from '@/types';
+import Input from '@/components/Input';
+import DateInput from '@/components/DateInput';
+import { useCreateAuctionMutation } from '../api/AuctionApi';
+import { CreateAuction } from '../types';
 
 type Props = {
   auction?: Auction;
 };
+function mapToCreateAuction(data: FieldValues): CreateAuction {
+  return {
+    make: data.make,
+    model: data.model,
+    color: data.color,
+    year: data.year,
+    mileage: data.mileage,
+    imageUrl: data.imageUrl,
+    reservePrice: data.reversePrice,
+    auctionEnd: data.auctionEnd,
+  };
+}
+
 export default function AuctionForm({ auction }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const [createAuction] = useCreateAuctionMutation();
+
   const {
     control,
     handleSubmit,
@@ -31,21 +47,22 @@ export default function AuctionForm({ auction }: Props) {
     setFocus('make');
   }, [setFocus]);
 
-  async function onSubmit(data: FieldValues) {
+  async function onSubmit(data: CreateAuction) {
     try {
       let id = '';
       let res;
+      //const mappedData = mapToCreateAuction(data);
       if (pathname === '/auctions/create') {
         res = await createAuction(data);
-        id = res.id;
+        id = res.data ? res.data.id : '';
       } else {
-        if (auction) {
-          res = await updateAuction(data, auction.id);
-          id = auction.id;
-        }
+        // if (auction) {
+        //   res = await updateAuction(data, auction.id);
+        //   id = auction.id;
+        // }
       }
 
-      if (res.error) {
+      if (res?.error) {
         throw res.error;
       }
       router.push(`/auctions/details/${id}`);

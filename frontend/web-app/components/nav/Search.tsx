@@ -1,5 +1,7 @@
 'use client';
+import { setSearchTerm } from '@/features/auctions/slices/auctionSlice';
 import { useParamsStore } from '@/hooks/useParamsStore';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -7,9 +9,10 @@ import { FaSearch } from 'react-icons/fa';
 export default function Search() {
   const router = useRouter();
   const pathname = usePathname();
-  const setParams = useParamsStore((state) => state.setParams);
-  const setSearchValue = useParamsStore((state) => state.setSearchValue);
-  const searchValue = useParamsStore((state) => state.searchValue);
+
+  const { searchTerm } = useAppSelector((state) => state.auction);
+  const dispatch = useAppDispatch();
+  const [searchValue, setSearchValue] = useState(searchTerm);
 
   function onChange(event: any) {
     setSearchValue(event.target.value);
@@ -17,8 +20,9 @@ export default function Search() {
 
   function search() {
     if (pathname !== '/') router.push('/');
-    setParams({ searchTerm: searchValue });
+    dispatch(setSearchTerm(searchValue));
   }
+
   return (
     <div className='flex w-[50%] items-center border-2 rounded-full py-2 shadow-sm'>
       <input
