@@ -11,7 +11,21 @@ export const bidApi = createApi({
       query: (id) => ({ url: `/bids/${id}` }),
       providesTags: ['Bids'],
     }),
+    placeBidForAuction: builder.mutation<
+      void,
+      { auctionId: string; amount: number }
+    >({
+      query: ({ auctionId, amount }) => ({
+        url: `/bids?auctionId=${auctionId}&amount=${amount}`,
+        method: 'POST',
+      }),
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(bidApi.util.invalidateTags(['Bids']));
+      },
+    }),
   }),
 });
 
-export const { useGetBidsForAuctionQuery } = bidApi;
+export const { useGetBidsForAuctionQuery, usePlaceBidForAuctionMutation } =
+  bidApi;

@@ -3,11 +3,11 @@ import Heading from '@/components/Heading';
 import React from 'react';
 import CountdownTimer from '@/features/auctions/components/CountdownTimer';
 import CardImage from '@/features/auctions/components/CardImage';
-import { useGetBidsForAuctionQuery } from '@/features/bids/api/BidApi';
 import { useGetAuctionDetailsQuery } from '@/features/auctions/api/AuctionApi';
 import DetailedSpecs from './DetailedSpecs';
 import EditButton from './EditButton';
 import DeleteButton from './DeleteButton';
+import BidList from '@/features/bids/components/BidList';
 
 type Props = {
   id: string;
@@ -16,7 +16,6 @@ type Props = {
 
 export default function Details({ id, user }: Props) {
   const { data: auction, isLoading } = useGetAuctionDetailsQuery(id);
-  const { data: bids } = useGetBidsForAuctionQuery(id);
 
   if (!auction || isLoading) return <div>Loading...</div>;
 
@@ -43,14 +42,7 @@ export default function Details({ id, user }: Props) {
         <div className='w-full bg-gray-200 relative aspect-[4/3] rounded-lg overflow-hidden'>
           <CardImage imageUrl={auction.imageUrl} />
         </div>
-        <div className='border-2 rounded-lg p-2 bg-gray-100'>
-          <Heading title='Bids' />
-          {bids?.map((bid) => (
-            <p key={bid.id}>
-              {bid.bidder} - {bid.amount}
-            </p>
-          ))}
-        </div>
+        <BidList auction={auction} user={user} />
       </div>
 
       <div className='mt-3 grid grid-cols-1 rounded-lg'>
