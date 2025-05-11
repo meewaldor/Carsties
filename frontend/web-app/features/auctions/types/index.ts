@@ -17,13 +17,10 @@ export type Auction = {
   id: string;
 };
 
-export interface CreateAuction {
-  make: string
-  model: string
-  color: string
-  year: number
-  mileage: number
-  imageUrl: string
-  reservePrice: number
-  auctionEnd: string
-}
+export type AuctionFinished = {
+  itemSold: boolean;
+  auctionId: string;
+  winner?: string;
+  seller: string;
+  amount?: number;
+};
