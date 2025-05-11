@@ -23,9 +23,11 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
-app.MapReverseProxy();
 
 app.UseCors("customPolicy");
+
+app.MapReverseProxy();
+
 
 app.UseAuthentication();
 app.UseAuthorization();
