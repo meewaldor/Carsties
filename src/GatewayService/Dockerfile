@@ -22,7 +22,7 @@ COPY src/IdentityService/IdentityService.csproj src/IdentityService/IdentityServ
 RUN dotnet restore Carsties.sln
 
 # Copy the app folders over
-COPY src/GatewayService src/GatewayService/
+COPY src/GatewayService src/GatewayService
 WORKDIR /app/src/GatewayService
 RUN dotnet publish -c Release -o /app/src/out
 
