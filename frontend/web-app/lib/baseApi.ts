@@ -1,4 +1,3 @@
-import { auth } from '@/auth';
 import { RootState } from '@/redux/store';
 import {
   BaseQueryApi,
@@ -6,11 +5,6 @@ import {
   fetchBaseQuery,
 } from '@reduxjs/toolkit/query';
 import toast from 'react-hot-toast';
-
-// const customBaseQuery = fetchBaseQuery({
-//   baseUrl: 'http://localhost:6001',
-//   credentials: 'include',
-// });
 
 const customBaseQuery = fetchBaseQuery({
   baseUrl: 'http://localhost:6001',
@@ -24,56 +18,86 @@ const customBaseQuery = fetchBaseQuery({
   },
 });
 
-type ErrorResponse = string | { title: string } | { errors: string[] };
+// type ErrorResponse = string | { title: string } | { errors: string[] };
 
-const sleep = () => new Promise((resolve) => setTimeout(resolve, 1000));
+// export const baseQueryWithErrorHandling = async (
+//   args: string | FetchArgs,
+//   api: BaseQueryApi,
+//   extraOptions: object
+// ) => {
+//   // api.dispatch(startLoading());
+//   // if (import.meta.env.DEV) await sleep();
+
+//   const result = await customBaseQuery(args, api, extraOptions);
+//   // api.dispatch(stopLoading());
+//   if (result.error) {
+//     console.log(result.error);
+
+//     const originalStatus =
+//       result.error.status === 'PARSING_ERROR' && result.error.originalStatus
+//         ? result.error.originalStatus
+//         : result.error.status;
+
+//     const responseData = result.error.data as ErrorResponse;
+
+//     switch (originalStatus) {
+//       case 400:
+//         if (typeof responseData === 'string') toast.error(responseData);
+//         else if ('errors' in responseData) {
+//           throw Object.values(responseData.errors).flat().join(', ');
+//         } else toast.error(responseData.title);
+//         break;
+//       case 401:
+//         if (typeof responseData === 'object' && 'title' in responseData)
+//           toast.error(responseData.title);
+//         break;
+//       case 403:
+//         if (typeof responseData === 'object') toast.error('403 Forbidden');
+//         break;
+//       case 404:
+//         if (typeof responseData === 'object' && 'title' in responseData)
+//           //router.push('/not-found');
+//           break;
+//       case 500:
+//         if (typeof responseData === 'object')
+//           //   router.push('/server-error', { state: { error: responseData } });
+//           //router.push('/server-error');
+
+//           break;
+//       default:
+//         break;
+//     }
+//   }
+
+//   return result;
+// };
 
 export const baseQueryWithErrorHandling = async (
   args: string | FetchArgs,
   api: BaseQueryApi,
   extraOptions: object
 ) => {
-  // api.dispatch(startLoading());
-  // if (import.meta.env.DEV) await sleep();
-
   const result = await customBaseQuery(args, api, extraOptions);
-  // api.dispatch(stopLoading());
+
   if (result.error) {
-    console.log(result.error);
+    const status = result.error.status;
+    const data = result.error.data as any;
 
-    const originalStatus =
-      result.error.status === 'PARSING_ERROR' && result.error.originalStatus
-        ? result.error.originalStatus
-        : result.error.status;
-
-    const responseData = result.error.data as ErrorResponse;
-
-    switch (originalStatus) {
+    switch (status) {
       case 400:
-        if (typeof responseData === 'string') toast.error(responseData);
-        else if ('errors' in responseData) {
-          throw Object.values(responseData.errors).flat().join(', ');
-        } else toast.error(responseData.title);
+        toast.error(data?.title || 'Bad Request');
         break;
       case 401:
-        if (typeof responseData === 'object' && 'title' in responseData)
-          toast.error(responseData.title);
+        toast.error(data?.title || 'Unauthorized');
         break;
       case 403:
-        if (typeof responseData === 'object') toast.error('403 Forbidden');
+        toast.error('Forbidden');
         break;
-      case 404:
-        if (typeof responseData === 'object' && 'title' in responseData)
-          //router.push('/not-found');
-          break;
       case 500:
-        if (typeof responseData === 'object')
-          //   router.push('/server-error', { state: { error: responseData } });
-          //router.push('/server-error');
-
-          break;
-      default:
+        toast.error('Server Error');
         break;
+      default:
+        toast.error('Unexpected error');
     }
   }
 

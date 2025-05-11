@@ -1,10 +1,10 @@
-// 'use client';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Navbar from '../components/nav/Navbar';
 import ToasterProvider from '../providers/ToasterProvider';
 import { StoreProvider } from '../providers/StoreProvider';
+import AuthSessionSync from '@/providers/AuthSessionSync';
+import { SessionProvider } from 'next-auth/react';
 
 export const metadata: Metadata = {
   title: 'Carsties',
@@ -19,11 +19,14 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body>
-        <StoreProvider>
-          <ToasterProvider />
-          <Navbar />
-          <main className='container mx-auto px-5 pt-10'>{children}</main>
-        </StoreProvider>
+        <SessionProvider>
+          <StoreProvider>
+            <AuthSessionSync />
+            <ToasterProvider />
+            <Navbar />
+            <main className='container mx-auto px-5 pt-10'>{children}</main>
+          </StoreProvider>
+        </SessionProvider>
       </body>
     </html>
   );
