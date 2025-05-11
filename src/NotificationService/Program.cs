@@ -1,4 +1,5 @@
 using MassTransit;
+using NotificationService.Consumers;
 using NotificationService.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configuring MassTransit
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
     // set endpoint for the exchange
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("nt", false));
 
