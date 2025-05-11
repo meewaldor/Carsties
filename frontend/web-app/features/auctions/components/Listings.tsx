@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import AuctionCard from './AuctionCard';
 import Filters from './Filters';
 import { useGetAuctionsQuery } from '../api/AuctionApi';

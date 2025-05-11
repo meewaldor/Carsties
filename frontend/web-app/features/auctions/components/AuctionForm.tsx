@@ -7,29 +7,20 @@ import toast from 'react-hot-toast';
 import { Auction } from '@/types';
 import Input from '@/components/Input';
 import DateInput from '@/components/DateInput';
-import { useCreateAuctionMutation } from '../api/AuctionApi';
-import { CreateAuction } from '../types';
+import {
+  useCreateAuctionMutation,
+  useUpdateAuctionMutation,
+} from '../api/AuctionApi';
 
 type Props = {
   auction?: Auction;
 };
-function mapToCreateAuction(data: FieldValues): CreateAuction {
-  return {
-    make: data.make,
-    model: data.model,
-    color: data.color,
-    year: data.year,
-    mileage: data.mileage,
-    imageUrl: data.imageUrl,
-    reservePrice: data.reversePrice,
-    auctionEnd: data.auctionEnd,
-  };
-}
 
 export default function AuctionForm({ auction }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [createAuction] = useCreateAuctionMutation();
+  const [updateAuction] = useUpdateAuctionMutation();
 
   const {
     control,
@@ -47,19 +38,19 @@ export default function AuctionForm({ auction }: Props) {
     setFocus('make');
   }, [setFocus]);
 
-  async function onSubmit(data: CreateAuction) {
+  async function onSubmit(data: FieldValues) {
     try {
       let id = '';
       let res;
-      //const mappedData = mapToCreateAuction(data);
+
       if (pathname === '/auctions/create') {
         res = await createAuction(data);
         id = res.data ? res.data.id : '';
       } else {
-        // if (auction) {
-        //   res = await updateAuction(data, auction.id);
-        //   id = auction.id;
-        // }
+        if (auction) {
+          res = await updateAuction({ id: auction.id, data: data });
+          id = auction.id;
+        }
       }
 
       if (res?.error) {

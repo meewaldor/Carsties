@@ -3,9 +3,8 @@ import { baseQueryWithErrorHandling } from '@/lib/baseApi';
 import { filterEmptyValues } from '@/lib/utils';
 import { Auction, PagedResult } from '@/types';
 import { AuctionParams } from '@/types/params';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { FieldValue } from 'react-hook-form';
-import { CreateAuction } from '../types';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { FieldValues } from 'react-hook-form';
 
 // Define a service using a base URL and expected endpoints
 export const auctionApi = createApi({
@@ -20,11 +19,35 @@ export const auctionApi = createApi({
       }),
       providesTags: ['Auctions'],
     }),
-    createAuction: builder.mutation<Auction, CreateAuction>({
+    getAuctionDetails: builder.query<Auction, string>({
+      query: (id) => `auctions/${id}`,
+    }),
+    createAuction: builder.mutation<Auction, FieldValues>({
       query: (auction) => ({
         url: '/auctions',
         method: 'POST',
         body: auction,
+      }),
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(auctionApi.util.invalidateTags(['Auctions']));
+      },
+    }),
+    updateAuction: builder.mutation<void, { id: string; data: FieldValues }>({
+      query: ({ id, data }) => ({
+        url: `auctions/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(auctionApi.util.invalidateTags(['Auctions']));
+      },
+    }),
+    deleteAuction: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/auctions/${id}`,
+        method: 'DELETE',
       }),
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
@@ -36,4 +59,10 @@ export const auctionApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetAuctionsQuery, useCreateAuctionMutation } = auctionApi;
+export const {
+  useGetAuctionsQuery,
+  useCreateAuctionMutation,
+  useGetAuctionDetailsQuery,
+  useUpdateAuctionMutation,
+  useDeleteAuctionMutation,
+} = auctionApi;
