@@ -4,7 +4,10 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { useParams } from 'next/navigation';
 import { Bid } from '@/features/bids/types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { auctionApi } from '@/features/auctions/api/AuctionApi';
+import {
+  auctionApi,
+  useGetAuctionDetailsQuery,
+} from '@/features/auctions/api/AuctionApi';
 import { Auction } from '@/types';
 import { User } from 'next-auth';
 import toast from 'react-hot-toast';
@@ -46,32 +49,59 @@ export default function SignalRProvider({ children, user }: Props) {
 
   const handleAuctionCreated = useCallback(
     (auction: Auction) => {
+      console.log('receive create');
+
       if (user?.username !== auction.seller) {
         return toast(<AuctionCreatedToast auction={auction} />, {
           duration: 10000,
         });
       }
     },
-    [user?.username]
+    [user?.username, auctionParams]
   );
 
   const handleAuctionFinished = useCallback(
     (finishedAuction: AuctionFinished) => {
-      const auction = getDetailedViewData(finishedAuction.auctionId);
-      return toast.promise(
-        auction,
-        {
-          loading: 'Loading',
-          success: (auction) => (
-            <AuctionFinishedToast
-              auction={auction}
-              finishedAuction={finishedAuction}
-            />
-          ),
-          error: (err) => 'Auction finished',
-        },
-        { success: { duration: 10000, icon: null } }
+      console.log('receive finish');
+      dispatch(
+        auctionApi.util.updateQueryData(
+          'getAuctionDetails',
+          finishedAuction.auctionId,
+          (draft) => {
+            draft.seller = finishedAuction.seller;
+            draft.winner = finishedAuction.winner;
+            draft.soldAmount = finishedAuction.amount || 0;
+          }
+        )
       );
+
+      const { auction } = useGetAuctionDetailsQuery(finishedAuction.auctionId, {
+        selectFromResult: ({ data }) => ({ auction: data }),
+      });
+
+      if (auction)
+        return toast(
+          <AuctionFinishedToast
+            auction={auction}
+            finishedAuction={finishedAuction}
+          />
+        );
+
+      // const auction = getDetailedViewData(finishedAuction.auctionId);
+      // return toast.promise(
+      //   auction,
+      //   {
+      //     loading: 'Loading',
+      //     success: (auction) => (
+      //       <AuctionFinishedToast
+      //         auction={auction}
+      //         finishedAuction={finishedAuction}
+      //       />
+      //     ),
+      //     error: (err) => 'Auction finished',
+      //   },
+      //   { success: { duration: 10000, icon: null } }
+      // );
     },
     []
   );

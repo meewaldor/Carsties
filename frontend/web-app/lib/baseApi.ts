@@ -18,7 +18,7 @@ const customBaseQuery = fetchBaseQuery({
   },
 });
 
-// type ErrorResponse = string | { title: string } | { errors: string[] };
+type ErrorResponse = string | { title: string } | { errors: string[] };
 
 // export const baseQueryWithErrorHandling = async (
 //   args: string | FetchArgs,
@@ -78,9 +78,14 @@ export const baseQueryWithErrorHandling = async (
   extraOptions: object
 ) => {
   const result = await customBaseQuery(args, api, extraOptions);
+  console.log('11111111111', result);
 
   if (result.error) {
-    const status = result.error.status;
+    // const status = result.error.status;
+    const status =
+      result.error.status === 'PARSING_ERROR' && result.error.originalStatus
+        ? result.error.originalStatus
+        : result.error.status;
     const data = result.error.data as any;
 
     switch (status) {
@@ -95,6 +100,9 @@ export const baseQueryWithErrorHandling = async (
         break;
       case 500:
         toast.error('Server Error');
+        break;
+      case 'FETCH_ERROR':
+        toast.error('fetch Error');
         break;
       default:
         toast.error('Unexpected error');

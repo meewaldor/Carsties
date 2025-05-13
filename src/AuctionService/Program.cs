@@ -56,6 +56,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters.NameClaimType = "username";
     });
 
+builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();    
 builder.Services.AddGrpc();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
