@@ -79,3 +79,7 @@ try
 }
 
 app.Run();
+
+public partial class Program
+{
+}
