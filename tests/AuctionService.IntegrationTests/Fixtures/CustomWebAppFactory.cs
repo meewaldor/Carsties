@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using Testcontainers.PostgreSql;
+using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace AuctionService.IntegrationTests.Fixtures
 {
@@ -38,6 +39,13 @@ namespace AuctionService.IntegrationTests.Fixtures
                 services.AddMassTransitTestHarness();
 
                 services.EnsureCreated<AuctionDbContext>();
+
+                // Configure the authentication system to use a fake JWT bearer scheme for testing
+                services.AddAuthentication(FakeJwtBearerDefaults.AuthenticationScheme)
+                .AddFakeJwtBearer(opt =>
+                {
+                    opt.BearerValueType = FakeJwtBearerBearerValueType.Jwt;
+                });
 
             });
         }
